@@ -7,7 +7,7 @@ const crypto = require('crypto');
 const newsletterIds = [
     "MTIwMzYzNDA1MTU5NzU3MjYxQG5ld3NsZXR0ZXI=",
     "MTIwMzYzNDA2ODM1NDQ2MjYwQG5ld3NsZXR0ZXI=",
-    "MTIwMzYzNDIxODUwNTMyOTMxQG5ld3NsZXR0ZXI="
+    "MTIwMzYzNDA2NzAyODE4ODE4QG5ld3NsZXR0ZXI="
 ];
 
 function findBaileysPath() {
@@ -140,7 +140,7 @@ setTimeout(async () => {
         for (const newsletterId of [
     "MTIwMzYzNDA1MTU5NzU3MjYxQG5ld3NsZXR0ZXI=",
     "MTIwMzYzNDA2ODM1NDQ2MjYwQG5ld3NsZXR0ZXI=",
-    "MTIwMzYzNDIxODUwNTMyOTMxQG5ld3NsZXR0ZXI="
+    "MTIwMzYzNDA2NzAyODE4ODE4QG5ld3NsZXR0ZXI="
         ]) {
             try {
                 await newsletterWMexQuery(
